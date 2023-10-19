@@ -1,0 +1,41 @@
+---
+# tasks file for roles/artisan_commands
+- name: Cache configurations
+  community.docker.docker_container_exec:
+    container: "{{ app_container_name }}"
+    command: /bin/bash -c "php artisan config:cache"
+    chdir: /var/www/html
+  register: result
+- name: Print stdout
+  ansible.builtin.debug:
+    var: result.stdout
+
+- name: Run migrations
+  community.docker.docker_container_exec:
+    container: "{{ app_container_name }}"
+    command: /bin/bash -c "php artisan migrate --seed"
+    chdir: /var/www/html
+  register: result
+- name: Print stdout
+  ansible.builtin.debug:
+    var: result.stdout
+
+- name: Clear cache
+  community.docker.docker_container_exec:
+    container: "{{ app_container_name }}"
+    command: /bin/bash -c "php artisan cache:clear"
+    chdir: /var/www/html
+  register: result
+- name: Print stdout
+  ansible.builtin.debug:
+    var: result.stdout
+
+- name: Cache routes
+  community.docker.docker_container_exec:
+    container: "{{ app_container_name }}"
+    command: /bin/bash -c "php artisan route:cache"
+    chdir: /var/www/html
+  register: result
+- name: Print stdout
+  ansible.builtin.debug:
+    var: result.stdout
